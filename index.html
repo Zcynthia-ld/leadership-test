@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta http-equiv="Access-Control-Allow-Methods" content="GET, POST, PUT, DELETE, OPTIONS">
+    <meta http-equiv="Access-Control-Allow-Headers" content="Content-Type, Authorization">
     <title>五行领导力测评工具</title>
+    <!-- 添加 Supabase 客户端库 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase 配置
+        const supabaseUrl = 'https://wklsjqymyadljohjcwkk.supabase.co'  // 替换为您的Supabase项目URL
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrbHNqcXlteWFkbGpvaGpjd2trIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyNTg2MTAsImV4cCI6MjA1OTgzNDYxMH0.ZwU_dApVoG0MomNgsQwqY1wv1sZGuD2sLu8H1DMWzi8'  // 替换为您的Supabase匿名密钥
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+    </script>
     <style>
         * {
             margin: 0;
@@ -246,31 +257,31 @@
             <div class="element">
                 <div class="element-icon gold">金</div>
                 <div class="element-desc">
-                    <strong>金型领导力（刚毅决断·规则导向）</strong>：注重规则执行与果断决策，适合需要强管控的场景。“金曰从革”，引申为凡具有沉降、肃杀、收敛、清洁、发声等性质和作用的事物或现象均归属于金。
+                    <strong>金型领导力（刚毅决断·规则导向）</strong>：注重规则执行与果断决策，适合需要强管控的场景。"金曰从革"，引申为凡具有沉降、肃杀、收敛、清洁、发声等性质和作用的事物或现象均归属于金。
                 </div>
             </div>
             <div class="element">
                 <div class="element-icon wood">木</div>
                 <div class="element-desc">
-                    <strong>木型领导力（成长驱动·团队协作）</strong>：强调人才培养与团队协作，适合创新驱动型组织。“木曰曲直”，指木具有能屈能伸、向上向外舒展的特性，引申为凡具有生长、升发、伸展、舒畅等性质和作用的事物或现象，均归属于木。
+                    <strong>木型领导力（成长驱动·团队协作）</strong>：强调人才培养与团队协作，适合创新驱动型组织。"木曰曲直"，指木具有能屈能伸、向上向外舒展的特性，引申为凡具有生长、升发、伸展、舒畅等性质和作用的事物或现象，均归属于木。
                 </div>
             </div>
             <div class="element">
                 <div class="element-icon water">水</div>
                 <div class="element-desc">
-                    <strong>水型领导力（灵活应变·沟通协调）</strong>：擅长灵活应变与沟通，适合复杂多变的环境。“水曰润下”，指水具有滋润、下行的特性。引申为凡具有滋润、下行、寒冷、闭藏等性质和作用的事物或现象，均归属于水。
+                    <strong>水型领导力（灵活应变·沟通协调）</strong>：擅长灵活应变与沟通，适合复杂多变的环境。"水曰润下"，指水具有滋润、下行的特性。引申为凡具有滋润、下行、寒冷、闭藏等性质和作用的事物或现象，均归属于水。
                 </div>
             </div>
             <div class="element">
                 <div class="element-icon fire">火</div>
                 <div class="element-desc">
-                    <strong>火型领导力（激情推动·目标导向）</strong>：注重目标达成与激情驱动，适合攻坚类任务。“火曰炎上”，炎上指火具有炎热、上升、光明的特性，引申为凡具有温热、升腾、明亮等性质和作用的事物或现象，均归属于火。
+                    <strong>火型领导力（激情推动·目标导向）</strong>：注重目标达成与激情驱动，适合攻坚类任务。"火曰炎上"，炎上指火具有炎热、上升、光明的特性，引申为凡具有温热、升腾、明亮等性质和作用的事物或现象，均归属于火。
                 </div>
             </div>
             <div class="element">
                 <div class="element-icon earth">土</div>
                 <div class="element-desc">
-                    <strong>土型领导力（稳定包容·文化塑造）</strong>：重视稳定与文化塑造，适合长期战略落地。“土爱稼穑”，指土具有播种和收获，即孕育生机、长养万物的特性，故称土载四行，为万物之母。引申为凡具有生化、承载、受纳等性质和作用的事物或现象，均归属于土。
+                    <strong>土型领导力（稳定包容·文化塑造）</strong>：重视稳定与文化塑造，适合长期战略落地。"土爱稼穑"，指土具有播种和收获，即孕育生机、长养万物的特性，故称土载四行，为万物之母。引申为凡具有生化、承载、受纳等性质和作用的事物或现象，均归属于土。
                 </div>
             </div>
             
@@ -332,7 +343,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- 引入Chart.js DataLabels插件 -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    <!-- 引入自定义脚本 -->
-    <script src="script.js"></script>
+    <!-- 引入自定义脚本
+    //<script src="script.js"></script> -->
+    <!-- 修改script标签为module类型 -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>

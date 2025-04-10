@@ -1,3 +1,30 @@
+// import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+// const supabase = createClient(
+//   'https://wklsjqymyadljohjcwkk.supabase.co',  // 替换为你的Project URL
+//   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrbHNqcXlteWFkbGpvaGpjd2trIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyNTg2MTAsImV4cCI6MjA1OTgzNDYxMH0.ZwU_dApVoG0MomNgsQwqY1wv1sZGuD2sLu8H1DMWzi8'                     // 替换为你的anon public key
+// );
+
+
+import { createClient } from '@supabase/supabase-js'
+
+// Supabase配置
+const supabaseUrl = 'https://wklsjqymyadljohjcwkk.supabase.co'  // 替换为您的Supabase项目URL
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrbHNqcXlteWFkbGpvaGpjd2trIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyNTg2MTAsImV4cCI6MjA1OTgzNDYxMH0.ZwU_dApVoG0MomNgsQwqY1wv1sZGuD2sLu8H1DMWzi8'  // 替换为您的Supabase匿名密钥
+const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+    },
+    global: {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+    }
+})
+
 // 等待DOM加载完成
 document.addEventListener('DOMContentLoaded', function() {
     // 初始化二维码
@@ -445,6 +472,56 @@ function initTest() {
         progressBar.style.width = `${progress}%`;
     }
     
+    // 保存测评结果到Supabase
+    async function saveResult(scores) {
+        try {
+            // 获取用户IP地址（可选）
+            let ipAddress = 'unknown';
+            try {
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                ipAddress = ipData.ip;
+            } catch (error) {
+                console.error('获取IP地址失败:', error);
+            }
+            
+            // 计算主导类型
+            const primaryType = findPrimaryType(scores);
+            
+            // 计算百分比
+            const percentages = calculatePercentage(scores);
+            
+            // 准备要保存的数据
+            const resultData = {
+                scores: scores,
+                percentages: percentages,
+                primary_type: primaryType,
+                ip_address: ipAddress,
+                timestamp: new Date().toISOString(),
+                user_agent: navigator.userAgent,
+                screen_resolution: `${window.screen.width}x${window.screen.height}`,
+                language: navigator.language
+            };
+            
+            // 保存到Supabase
+            const { data, error } = await supabase
+                .from('test_results')
+                .insert([resultData]);
+            
+            if (error) {
+                console.error('保存结果失败:', error);
+                throw error;
+            }
+            
+            console.log('结果已成功保存到Supabase:', data);
+            return data;
+        } catch (error) {
+            console.error('保存结果时发生错误:', error);
+            // 即使保存失败，也不影响用户查看结果
+            return null;
+        }
+    }
+    
     // 显示测评结果
     function showResults() {
         testSection.style.display = 'none';
@@ -470,6 +547,9 @@ function initTest() {
         
         // 绘制图表
         drawChart(percentages);
+
+        saveResult(scores); // 新增此行
+        
     }
     
     // 计算各元素得分
