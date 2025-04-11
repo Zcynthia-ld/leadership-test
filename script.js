@@ -7,20 +7,20 @@ document.addEventListener('DOMContentLoaded', function() {
     initTest();
 });
 
-// 生成二维码
-function generateQRCode() {
-    try {
-        const currentUrl = window.location.href;
-        const qrcodeElement = document.getElementById('qrcode');
+// // 生成二维码
+// function generateQRCode() {
+//     try {
+//         const currentUrl = window.location.href;
+//         const qrcodeElement = document.getElementById('qrcode');
         
-        // 使用在线API生成二维码，避免依赖本地库
-        qrcodeElement.innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(currentUrl) + '" alt="五行领导力测评二维码" />';
-    } catch (error) {
-        console.error('二维码生成失败:', error);
-        const qrcodeElement = document.getElementById('qrcode');
-        qrcodeElement.innerHTML = '<p>二维码生成失败，请刷新页面重试</p>';
-    }
-}
+//         // 使用在线API生成二维码，避免依赖本地库
+//         qrcodeElement.innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(currentUrl) + '" alt="五行领导力测评二维码" />';
+//     } catch (error) {
+//         console.error('二维码生成失败:', error);
+//         const qrcodeElement = document.getElementById('qrcode');
+//         qrcodeElement.innerHTML = '<p>二维码生成失败，请刷新页面重试</p>';
+//     }
+// }
 
 
 // 测评题目数据
@@ -576,12 +576,24 @@ function initTest() {
         // 2. 添加五行平衡分析（带图片）
         const balanceAnalysisContainer = document.createElement('div');
         balanceAnalysisContainer.className = 'balance-analysis-container'; // 使用我们新加的CSS class
+        
+        // const imgElement = document.createElement('img');
+        // imgElement.src = '5elements.png'; // 使用项目根目录下的相对路径
+        // imgElement.alt = '五行相生相克图';
+        // imgElement.width = 200; // 确保图片宽度为200px
+        // imgElement.style.display = 'block'; // 确保图片为块级元素
 
         const imgElement = document.createElement('img');
-        imgElement.src = '5elements.png'; // 使用项目根目录下的相对路径
+        imgElement.src = '5elements.png';
         imgElement.alt = '五行相生相克图';
-        imgElement.width = 200; // 确保图片宽度为200px
-        imgElement.style.display = 'block'; // 确保图片为块级元素
+        imgElement.className = 'element-relation-img'; // 添加class
+        balanceAnalysisContainer.appendChild(imgElement);
+        // // 添加移动端专用图片
+        // const mobileImg = document.createElement('img');
+        // mobileImg.src = '5elements.png';
+        // mobileImg.className = 'mobile-element-img';
+        // mobileImg.alt = '五行关系图';
+        // balanceAnalysisContainer.appendChild(mobileImg);
 
         const textContentDiv = document.createElement('div');
         textContentDiv.className = 'text-content';
@@ -589,7 +601,7 @@ function initTest() {
             <h4>五行平衡分析</h4>
             <p>${getBalanceAnalysis(scores, primaryType)}</p>
         `;
-
+        
         balanceAnalysisContainer.appendChild(imgElement);
         balanceAnalysisContainer.appendChild(textContentDiv);
 
@@ -681,11 +693,17 @@ function initTest() {
         
         const ctx = document.getElementById('resultChart').getContext('2d');
         
-        // 设置图表容器尺寸（放大一倍）
+        // // 设置图表容器尺寸（放大一倍）
+        // const chartContainer = document.querySelector('.chart-container');
+        // chartContainer.style.width = '600px'; // 原尺寸的两倍
+        // chartContainer.style.height = '400px'; // 原尺寸的两倍
+
+        // 修改容器尺寸设置
         const chartContainer = document.querySelector('.chart-container');
-        chartContainer.style.width = '600px'; // 原尺寸的两倍
-        chartContainer.style.height = '400px'; // 原尺寸的两倍
-        
+        chartContainer.style.width = '100%';
+        chartContainer.style.height = 'auto';
+        chartContainer.style.aspectRatio = '1.5'; // 保持宽高比
+
         // 准备数据
         const data = {
             labels: [
@@ -728,8 +746,8 @@ function initTest() {
 
         // 配置选项
         const options = {
-            responsive: true, // 使图表自动适配容器大小
-            maintainAspectRatio: false, // 不保持固定的宽高比
+            responsive: true,
+            maintainAspectRatio: true, 
             scales: {
                 r: {
                     angleLines: {
@@ -793,7 +811,9 @@ function initTest() {
         new Chart(ctx, {
             type: 'radar',
             data: data,
-            options: options
+            options: options,
+            plugins: [ChartDataLabels],
+            responsiveAnimationDuration: 300 // 响应式动画时长
         });
     }
 
