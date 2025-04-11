@@ -1,7 +1,7 @@
 // 等待DOM加载完成
 document.addEventListener('DOMContentLoaded', function() {
     // 初始化二维码
-    generateQRCode();
+    // generateQRCode();
     
     // 初始化测评系统
     initTest();
