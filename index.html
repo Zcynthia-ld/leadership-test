@@ -230,9 +230,9 @@
             margin: 30px 0;
         }
 
-        .balance-analysis-container {
+        /* .balance-analysis-container {
             display: flex;
-            flex-wrap: wrap; /* 允许换行 */
+            flex-wrap: wrap; 
             gap: 20px;
             align-items: flex-start;
             margin: 30px 0;
@@ -240,19 +240,47 @@
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #eee;
-        }
-        .balance-analysis-container img {
+        } */
+        /* .balance-analysis-container img {
             width: 45%;
             max-width: 280px;
             height: auto;
             border-radius: 5px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
+        } */
 
         
-        .balance-analysis-container .text-content {
+        /* .balance-analysis-container .text-content {
             flex: 1;
             min-width: 300px;
+        } */ 
+
+        /* 在现有样式基础上修改以下部分 */
+        .balance-analysis-container {
+            display: flex;
+            align-items: center; /* 电脑端垂直居中 */
+            justify-content: space-between;
+            margin: 30px 0;
+            background: #fafafa;
+            padding: 25px;
+            border-radius: 10px;
+            position: relative;
+            min-height: 280px; /* 添加最小高度保证垂直居中效果 */
+        }
+
+        .balance-analysis-container img {
+            width: 45%;
+            max-width: 280px;
+            height: auto;
+            object-fit: contain; /* 保持图片比例 */
+            margin: 0 30px 0 0; /* 仅设置右边距 */
+            align-self: center; /* 确保垂直居中 */
+        }
+
+        .text-content {
+            flex: 1;
+            min-width: 50%;
+            padding-right: 20px;
         }
 
         .balance-analysis-container h4 {
@@ -268,40 +296,48 @@
             line-height: 1.8;
             white-space: pre-line;
         }
+        
         /* 移动端适配 */
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            /* 雷达图容器 */
-            .chart-container {
-                height: 280px !important; /* 保持适当高度 */
-                max-width: 100%;
-            }
-
-            /* 五行平衡容器 */
             .balance-analysis-container {
                 flex-direction: column;
+                min-height: auto;
                 padding: 15px;
             }
 
-            /* 移动端图片样式 */
             .balance-analysis-container img {
                 width: 100%;
                 max-width: none;
-                margin: 15px 0 0 0;
-                order: 2; /* 图片在下 */
+                margin: 20px 0 0 0; /* 图片在下 */
+                order: 2; /* 通过order控制显示顺序 */
             }
 
-            /* 文字内容 */
             .text-content {
-                min-width: auto;
                 width: 100%;
+                padding: 0;
                 order: 1; /* 文字在上 */
             }
-            
+
+            /* 解决文字溢出问题 */
+            .balance-analysis-container p {
+                white-space: normal !important; /* 强制正常换行 */
+                word-break: break-word; /* 允许单词内断行 */
+                font-size: 0.95rem; /* 适当缩小字体 */
+                line-height: 1.6; /* 增加行高 */
+            }
+
+            .balance-analysis-container h4 {
+                font-size: 1.2rem; /* 适当缩小标题 */
+            }
         }
+
+        /* 通用文字优化 */
+        .balance-analysis-container p {
+            text-align: justify; /* 两端对齐 */
+            hyphens: auto; /* 自动连字符（支持英文） */
+            margin-bottom: 15px;
+        }
+        
 
         #restartBtn {
             display: block;
@@ -425,7 +461,7 @@
             <h2>扫码进入移动端测评</h2>
             <div class="qr-container">
                 <img 
-                    src="QRcode.png" 
+                    src="QRCode.png" 
                     alt="五行领导力测评二维码" 
                     class="qr-image"
                     loading="lazy"
@@ -483,3 +519,37 @@
     <script src="script.js"></script>
 </body>
 </html>
+
+
+<!-- /* 移动端适配 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            /* 雷达图容器 */
+            .chart-container {
+                height: 280px !important; /* 保持适当高度 */
+                max-width: 100%;
+            }
+
+            /* 五行平衡容器 */
+            .balance-analysis-container {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            /* 移动端图片样式 */
+            .balance-analysis-container img {
+                width: 100%;
+                max-width: none;
+                margin: 15px 0 0 0;
+                order: 2; /* 图片在下 */
+            }
+
+            /* 文字内容 */
+            .text-content {
+                min-width: auto;
+                width: 100%;
+                order: 1; /* 文字在上 */
+            } */ -->
