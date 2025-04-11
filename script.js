@@ -445,6 +445,8 @@ function initTest() {
         progressBar.style.width = `${progress}%`;
     }
     
+    
+    
     // 显示测评结果
     function showResults() {
         testSection.style.display = 'none';
@@ -470,6 +472,8 @@ function initTest() {
         
         // 绘制图表
         drawChart(percentages);
+
+        
     }
     
     // 计算各元素得分
@@ -533,10 +537,8 @@ function initTest() {
     // 生成详细分析
     function generateDetailedAnalysis(scores, primaryType) {
         const detailedAnalysis = document.getElementById('detailedAnalysis');
-        detailedAnalysis.innerHTML = '';
-        
-        // 分析各元素得分
-        const elements = ['gold', 'wood', 'water', 'fire', 'earth'];
+        detailedAnalysis.innerHTML = ''; // 清空旧内容
+
         const elementNames = {
             gold: '金',
             wood: '木',
@@ -544,43 +546,68 @@ function initTest() {
             fire: '火',
             earth: '土'
         };
-        
-        // 添加各元素分析
+        const typeDescriptions = { /* ... 确保这里有类型描述 ... */ }; // 假设 typeDescriptions 已经定义
+
+        // 1. 分析各元素得分
+        const elements = ['gold', 'wood', 'water', 'fire', 'earth'];
         elements.forEach(element => {
             const elementScore = scores[element];
-            const maxPossibleScore = 20; // 每个元素最多4题
-            const percentage = (elementScore / maxPossibleScore) * 100;
-            
+            const maxPossibleScore = 20; // 假设每个元素最多20分
+            const percentage = Math.round((elementScore / maxPossibleScore) * 100);
+
             const elementAnalysis = document.createElement('div');
-            elementAnalysis.className = 'element-analysis';
+            elementAnalysis.className = 'element-analysis'; // 你可能需要定义这个class的样式
             elementAnalysis.innerHTML = `
                 <div class="element">
                     <div class="element-icon ${element}">${elementNames[element]}</div>
                     <div class="element-desc">
-                        <strong>${typeDescriptions[element].title}</strong>
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: ${percentage}%"></div>
+                        <strong>${typeDescriptions[element]?.title || elementNames[element]}</strong> <!-- 添加了?. 和 || 以防万一 -->
+                        <div class="score-bar" style="width:100%; background-color: #eee; border-radius: 3px;">
+                            <div class="score-fill" style="width: ${percentage}%; height: 8px; background-color: ${getElementColor(element)}; border-radius: 3px;"></div>
                         </div>
-                        <span>${elementScore}/${maxPossibleScore} (${Math.round(percentage)}%)</span>
+                        <span>得分: ${elementScore}/${maxPossibleScore} (${percentage}%)</span>
                     </div>
                 </div>
-                <p class="element-analysis-text">${getElementAnalysis(element, elementScore, primaryType)}</p>
+                <p style="margin-left: 55px; font-size: 0.9em; color: #555;">${getElementAnalysis(element, elementScore, primaryType)}</p>
             `;
-            
             detailedAnalysis.appendChild(elementAnalysis);
         });
-        
-        // 添加五行相生相克分析
-        const balanceAnalysis = document.createElement('div');
-        balanceAnalysis.className = 'balance-analysis';
-        balanceAnalysis.innerHTML = `
+
+        // 2. 添加五行平衡分析（带图片）
+        const balanceAnalysisContainer = document.createElement('div');
+        balanceAnalysisContainer.className = 'balance-analysis-container'; // 使用我们新加的CSS class
+
+        const imgElement = document.createElement('img');
+        imgElement.src = '5elements.png'; // 使用项目根目录下的相对路径
+        imgElement.alt = '五行相生相克图';
+        imgElement.width = 200; // 确保图片宽度为200px
+        imgElement.style.display = 'block'; // 确保图片为块级元素
+
+        const textContentDiv = document.createElement('div');
+        textContentDiv.className = 'text-content';
+        textContentDiv.innerHTML = `
             <h4>五行平衡分析</h4>
             <p>${getBalanceAnalysis(scores, primaryType)}</p>
         `;
-        
-        detailedAnalysis.appendChild(balanceAnalysis);
+
+        balanceAnalysisContainer.appendChild(imgElement);
+        balanceAnalysisContainer.appendChild(textContentDiv);
+
+        detailedAnalysis.appendChild(balanceAnalysisContainer);
     }
-    
+
+    // Helper function to get element color (you might already have this or similar)
+    function getElementColor(element) {
+        switch(element) {
+            case 'gold': return '#FFD700';
+            case 'wood': return '#228B22';
+            case 'water': return '#1E90FF';
+            case 'fire': return '#FF4500';
+            case 'earth': return '#CD853F';
+            default: return '#ccc';
+        }
+    }
+
     // 获取元素分析文本
     function getElementAnalysis(element, score, primaryType) {
         const maxScore = 4;

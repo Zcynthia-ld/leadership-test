@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>五行领导力测评工具</title>
+    <title>五行领导力测评</title>
     <style>
         * {
             margin: 0;
@@ -223,54 +223,111 @@
             }
         }
         #startTestBtn {
-            margin-top: 20px;
+            margin: 30px auto;
             font-size: 1.2rem;
             padding: 15px 30px;
+            display: block;
+            width: fit-content;
+        }
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        .balance-analysis-container {
+            display: flex;
+            align-items: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            background-color: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .balance-analysis-container img {
+            width: 200px;
+            height: auto;
+            margin-right: 25px;
+            flex-shrink: 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .balance-analysis-container .text-content {
+            flex-grow: 1;
+        }
+        .balance-analysis-container h4 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4a148c;
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+        .balance-analysis-container p {
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+        #restartBtn {
+            display: block;
+            margin: 20px auto;
+            font-size: 1.1rem;
+            padding: 12px 25px;
+            background-color: #4a148c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #restartBtn:hover {
+            background-color: #7e57c2;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>五行领导力测评工具</h1>
+            <h1>五行领导力测评</h1>
             <p>探索您的五行领导力特质</p>
         </header>
 
         <section class="intro">
             <h2>测评介绍</h2>
-            <p>五行领导力测评基于中国传统五行理论（金、木、水、火、土），结合现代领导力研究，帮助您发现自己的领导风格特质和优势领域。</p>
-            
-            <p>本测评包含20道精心设计的问题，涵盖决策力、团队管理、应变能力等多个维度，通过分析您的回答，识别您的领导力类型。</p>
+            <p>五行领导力测评基于中国传统五行理论（金、木、水、火、土），结合现代领导力研究，帮助您发现自己的领导风格特质和优势领域。
+            本测评包含20道精心设计的问题，涵盖决策力、团队管理、应变能力等多个维度，通过分析您的回答，识别您的领导力类型。</p>
             
             <h3>五行领导力类型</h3>
             <div class="element">
                 <div class="element-icon gold">金</div>
                 <div class="element-desc">
-                    <strong>金型领导力（刚毅决断·规则导向）</strong>：注重规则执行与果断决策，适合需要强管控的场景。“金曰从革”，引申为凡具有沉降、肃杀、收敛、清洁、发声等性质和作用的事物或现象均归属于金。
+                    <strong>金型领导力（刚毅决断·规则导向）</strong>：注重规则执行与果断决策，适合需要强管控的场景。“金曰从革”，金具有可塑性和适应性，能够带来秩序和规则。凡具有沉降、肃杀、收敛、清洁、发声等性质和作用的事物或现象，均归属于金。
                 </div>
             </div>
             <div class="element">
                 <div class="element-icon wood">木</div>
                 <div class="element-desc">
-                    <strong>木型领导力（成长驱动·团队协作）</strong>：强调人才培养与团队协作，适合创新驱动型组织。“木曰曲直”，指木具有能屈能伸、向上向外舒展的特性，引申为凡具有生长、升发、伸展、舒畅等性质和作用的事物或现象，均归属于木。
+                    <strong>木型领导力（成长驱动·团队协作）</strong>：强调人才培养与团队协作，适合创新驱动型组织。“木曰曲直”，木具有能屈能伸、向上向外舒展的特性。凡具有生长、升发、伸展、舒畅等性质和作用的事物或现象，均归属于木。
                 </div>
             </div>
             <div class="element">
                 <div class="element-icon water">水</div>
                 <div class="element-desc">
-                    <strong>水型领导力（灵活应变·沟通协调）</strong>：擅长灵活应变与沟通，适合复杂多变的环境。“水曰润下”，指水具有滋润、下行的特性。引申为凡具有滋润、下行、寒冷、闭藏等性质和作用的事物或现象，均归属于水。
+                    <strong>水型领导力（灵活应变·沟通协调）</strong>：擅长灵活应变与沟通，适合复杂多变的环境。“水曰润下”，水具有滋润、下行的特性。凡具有滋润、下行、寒冷、闭藏等性质和作用的事物或现象，均归属于水。
                 </div>
             </div>
             <div class="element">
                 <div class="element-icon fire">火</div>
                 <div class="element-desc">
-                    <strong>火型领导力（激情推动·目标导向）</strong>：注重目标达成与激情驱动，适合攻坚类任务。“火曰炎上”，炎上指火具有炎热、上升、光明的特性，引申为凡具有温热、升腾、明亮等性质和作用的事物或现象，均归属于火。
+                    <strong>火型领导力（激情推动·目标导向）</strong>：注重目标达成与激情驱动，适合攻坚类任务。“火曰炎上”，炎上指火具有炎热、上升、光明的特性。凡具有温热、升腾、明亮等性质和作用的事物或现象，均归属于火。
                 </div>
             </div>
             <div class="element">
                 <div class="element-icon earth">土</div>
                 <div class="element-desc">
-                    <strong>土型领导力（稳定包容·文化塑造）</strong>：重视稳定与文化塑造，适合长期战略落地。“土爱稼穑”，指土具有播种和收获，即孕育生机、长养万物的特性，故称土载四行，为万物之母。引申为凡具有生化、承载、受纳等性质和作用的事物或现象，均归属于土。
+                    <strong>土型领导力（稳定包容·文化塑造）</strong>：重视稳定与文化塑造，适合长期战略落地。“土爱稼穑”，土具有播种和收获，即孕育生机、长养万物的特性，故称土载四行，为万物之母。凡具有生化、承载、受纳等性质和作用的事物或现象，均归属于土。
                 </div>
             </div>
             
@@ -279,11 +336,12 @@
 
         <section class="qr-section">
             <h2>扫码进入移动端测评</h2>
-            <p>使用手机扫描下方二维码，随时随地进行五行领导力测评</p>
-            <div class="qr-code" id="qrcode">
+            <!-- <div class="qr-code" id="qrcode">
                 <p>二维码加载中...</p>
+            </div> -->
+            <div id="qrcode">
+                <img src="QRcode.png" alt="二维码">
             </div>
-            <p>扫描后可在手机上完成测评并获取详细分析报告</p>
         </section>
 
         <section class="test-section" id="testSection">
@@ -324,7 +382,7 @@
         </section>
 
         <footer>
-            <p>© 2025 五行领导力测评工具 | 江苏交控人才集团版权所有</p>
+            <p>© 2025 五行领导力测评 | 江苏交控人才集团版权所有</p>
         </footer>
     </div>
 
