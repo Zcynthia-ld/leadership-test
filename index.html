@@ -300,6 +300,7 @@
                 width: 100%;
                 order: 1; /* 文字在上 */
             }
+            
         }
 
         #restartBtn {
@@ -316,6 +317,60 @@
         }
         #restartBtn:hover {
             background-color: #7e57c2;
+        }
+        /* 新增二维码响应式样式 */
+        .qr-section {
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        .qr-container {
+            margin: 20px auto;
+            padding: 15px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 280px;
+        }
+
+        .qr-image {
+            width: 100%;
+            height: auto;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        .qr-tips {
+            margin-top: 15px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .qr-container {
+                max-width: 220px;
+                padding: 12px;
+            }
+            
+            .qr-image {
+                padding: 8px;
+            }
+            
+            .qr-tips {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .qr-section h2 {
+                font-size: 1.4rem;
+            }
+            
+            .qr-container {
+                max-width: 200px;
+            }
         }
     </style>
 </head>
@@ -368,11 +423,13 @@
 
         <section class="qr-section">
             <h2>扫码进入移动端测评</h2>
-            <!-- <div class="qr-code" id="qrcode">
-                <p>二维码加载中...</p>
-            </div> -->
-            <div id="qrcode">
-                <img src="QRcode.png" alt="二维码">
+            <div class="qr-container">
+                <img 
+                    src="QRcode.png" 
+                    alt="五行领导力测评二维码" 
+                    class="qr-image"
+                    loading="lazy"
+                >
             </div>
         </section>
 
