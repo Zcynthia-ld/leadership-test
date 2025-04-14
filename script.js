@@ -1,26 +1,36 @@
+// import { createClient } from '@supabase/supabase-js'
+
+// 全局变量
+let supabase;
+let currentParticipantId = null; // 添加全局变量存储当前参与者ID
+
 // 等待DOM加载完成
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化二维码
-    // generateQRCode();
+    
+    
+    // 初始化 Supabase 客户端
+    const supabaseUrl = 'https://jqyhrtklxjzltwwejeoa.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxeWhydGtseGp6bHR3d2VqZW9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyOTExNDgsImV4cCI6MjA1OTg2NzE0OH0.Ba2eJc3M-kYYc-zZNJ3LH2ZKJVs_bMRjUkziLo89vI4';
+    
+    // 确保Supabase库已加载
+    if (typeof window.supabase === 'undefined') {
+        console.error('Supabase库未加载，请检查网络连接或刷新页面');
+        return;
+    }
+    
+    // 创建Supabase客户端并赋值给全局变量
+    supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    
+    // 测试Supabase连接
+    supabase.from('test_results').select('count').then(response => {
+        console.log('Supabase连接成功:', response);
+    }).catch(error => {
+        console.error('Supabase连接失败:', error);
+    });
     
     // 初始化测评系统
     initTest();
 });
-
-// // 生成二维码
-// function generateQRCode() {
-//     try {
-//         const currentUrl = window.location.href;
-//         const qrcodeElement = document.getElementById('qrcode');
-        
-//         // 使用在线API生成二维码，避免依赖本地库
-//         qrcodeElement.innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(currentUrl) + '" alt="五行领导力测评二维码" />';
-//     } catch (error) {
-//         console.error('二维码生成失败:', error);
-//         const qrcodeElement = document.getElementById('qrcode');
-//         qrcodeElement.innerHTML = '<p>二维码生成失败，请刷新页面重试</p>';
-//     }
-// }
 
 
 // 测评题目数据
@@ -321,20 +331,67 @@ function initTest() {
     const progressBar = document.getElementById('progressBar');
     const resultSection = document.getElementById('resultSection');
     const restartBtn = document.getElementById('restartBtn');
+    //****获取姓名输入框
+    const nameInput = document.getElementById('nameInput');
     
     let currentQuestionIndex = 0;
     let answers = {};
-    
+
     // 开始测评按钮点击事件
     startTestBtn.addEventListener('click', function() {
+        // ****新加输入姓名
+        const name = nameInput.value.trim();
+        if (!name) {
+            alert('请输入您的姓名！');
+            return;
+        }
+        //
         introSection.style.display = 'none';
         qrSection.style.display = 'none';
         testSection.style.display = 'block';
+
+        // ****保存用户信息到 Supabase
+        saveParticipantInfo(name);
         
         // 加载第一个问题
         loadQuestion(currentQuestionIndex);
     });
     
+    
+    // 保存参与者信息
+    async function saveParticipantInfo(participantName) {
+        try {
+            if (!supabase) {
+                throw new Error('Supabase客户端未初始化');
+            }
+            
+            const { data, error } = await supabase
+                .from('test_results')
+                .insert([
+                    {
+                        name: participantName,
+                        scores: {},
+                        percentages: {}
+                    }
+                ])
+                .select(); // 添加select()以获取插入的数据
+                
+            if (error) throw error;
+            
+            if (data && data.length > 0) {
+                currentParticipantId = data[0].id; // 保存返回的UUID
+                console.log('保存成功，参与者ID:', currentParticipantId);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('保存失败:', error);
+            alert('保存失败，请重试');
+            return false;
+        }
+    }
+    
+
     // 上一题按钮点击事件
     prevBtn.addEventListener('click', function() {
         if (currentQuestionIndex > 0) {
@@ -345,29 +402,26 @@ function initTest() {
     });
     
     // 下一题按钮点击事件
-
-    // nextBtn.addEventListener('click', function() {
-    //     // 保存当前答案
-    //     const selectedOption = document.querySelector('.option.selected');
-    //     if (!selectedOption) {
-    //         alert('请选择一个选项');
-    //         return;
-    //     }
-    
-    // 在nextBtn的点击事件处理函数中修改如下：
     nextBtn.addEventListener('click', function() {
         // 获取当前活动的问题元素
         const currentQuestion = document.querySelector('.question.active');
         if (!currentQuestion) return;
 
-        // 只在当前问题中查找选中选项
-        const selectedOption = currentQuestion.querySelector('.option.selected');
+        // 获取当前问题中的所有选项
+        const options = currentQuestion.querySelectorAll('.option');
+        let selectedOption = null;
+
+        // 遍历所有选项，找到选中的选项
+        options.forEach(option => {
+            if (option.classList.contains('selected')) {
+                selectedOption = option;
+            }
+        });
         
-        // 去掉网页提示
-        // if (!selectedOption) {
-        //     alert('请选择一个选项');
-        //     return;
-        // }
+        // 如果没有选择选项，不显示提示，直接返回
+        if (!selectedOption) {
+            return;
+        }
         
         const questionId = questions[currentQuestionIndex].id;
         const optionType = selectedOption.getAttribute('data-type');
@@ -382,8 +436,6 @@ function initTest() {
             showResults();
         }
     });
-    
-
     
     // 重新测评按钮点击事件
     restartBtn.addEventListener('click', function() {
@@ -445,8 +497,6 @@ function initTest() {
         progressBar.style.width = `${progress}%`;
     }
     
-    
-    
     // 显示测评结果
     function showResults() {
         testSection.style.display = 'none';
@@ -473,9 +523,92 @@ function initTest() {
         // 绘制图表
         drawChart(percentages);
 
-        
+        // ****保存测评结果到 Supabase
+        saveAssessmentResults(scores, percentages);
     }
-    
+    // 保存测评结果
+    async function saveAssessmentResults(scores, percentages) {
+        try {
+            if (!supabase || !currentParticipantId) {
+                throw new Error('Supabase客户端未初始化或参与者ID不存在');
+            }
+            
+            // 首先更新当前记录
+            const { data: updateData, error: updateError } = await supabase
+                .from('test_results')
+                .update({
+                    scores: scores,
+                    percentages: percentages
+                })
+                .eq('id', currentParticipantId)
+                .select();
+                
+            if (updateError) throw updateError;
+            console.log('测评结果保存成功:', updateData);
+        } catch (error) {
+            console.error('保存测评结果失败:', error);
+            alert('保存测评结果失败，请重试');
+        }
+    }
+    // // 保存测评结果
+    // async function saveAssessmentResults(scores, percentages) {
+    //     try {
+    //         if (!supabase || !currentParticipantId) {
+    //             throw new Error('Supabase客户端未初始化或参与者ID不存在');
+    //         }
+            
+    //         // 首先更新当前记录
+    //         const { data: updateData, error: updateError } = await supabase
+    //             .from('test_results')
+    //             .update({
+    //                 scores: scores,
+    //                 percentages: percentages
+    //             })
+    //             .eq('id', currentParticipantId)
+    //             .select();
+                
+    //         if (updateError) throw updateError;
+    //         console.log('测评结果保存成功:', updateData);
+
+    //         // 查找同名记录
+    //         const { data: sameNameRecords, error: findError } = await supabase
+    //             .from('test_results')
+    //             .select('*')
+    //             .eq('name', updateData[0].name);
+
+    //         if (findError) throw findError;
+
+    //         // 打印所有同名记录
+    //         console.log('同名记录:', sameNameRecords);
+
+    //         // 如果找到多个同名记录
+    //         if (sameNameRecords && sameNameRecords.length > 1) {
+    //             console.log('发现重复记录:');
+    //             sameNameRecords.forEach(record => {
+    //                 console.log(`ID: ${record.id}, 姓名: ${record.name}, 分数: ${record.scores}, 百分比: ${record.percentages}`);
+    //             });
+
+    //             // 删除除了当前记录之外的所有同名记录
+    //             const recordsToDelete = sameNameRecords
+    //                 .filter(record => record.id !== currentParticipantId)
+    //                 .map(record => record.id);
+
+    //             if (recordsToDelete.length > 0) {
+    //                 const { error: deleteError } = await supabase
+    //                     .from('test_results')
+    //                     .delete()
+    //                     .in('id', recordsToDelete);
+
+    //                 if (deleteError) throw deleteError;
+    //                 console.log('删除重复记录成功:', recordsToDelete);
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('保存测评结果失败:', error);
+    //         alert('保存测评结果失败，请重试');
+    //     }
+    // }
+
     // 计算各元素得分
     function calculateScores() {
         const scores = {
@@ -516,9 +649,8 @@ function initTest() {
         
         
         return percentages;
-}
+    }
 
-    
     // 找出主导类型
     function findPrimaryType(scores) {
         let maxScore = 0;
@@ -688,16 +820,18 @@ function initTest() {
     }
     
     // 绘制雷达图
+    let resultChart = null; // 添加全局变量存储图表实例
+
     function drawChart(percentages) {
         if (!document.getElementById('resultChart')) return;
         
         const ctx = document.getElementById('resultChart').getContext('2d');
         
-        // // 设置图表容器尺寸（放大一倍）
-        // const chartContainer = document.querySelector('.chart-container');
-        // chartContainer.style.width = '600px'; // 原尺寸的两倍
-        // chartContainer.style.height = '400px'; // 原尺寸的两倍
-
+        // 如果已存在图表实例，先销毁它
+        if (resultChart) {
+            resultChart.destroy();
+        }
+        
         // 修改容器尺寸设置
         const chartContainer = document.querySelector('.chart-container');
         chartContainer.style.width = '100%';
@@ -713,7 +847,7 @@ function initTest() {
                 '火（激情目标）',
                 '土（稳定包容）'
             ],
-            datasets: [ {
+            datasets: [{
                 label: '五行领导力分布',
                 data: [
                     percentages.gold,
@@ -729,8 +863,8 @@ function initTest() {
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
                 pointHoverBorderColor: 'rgb(75, 0, 130)',
-                pointRadius: 5, // 增大点的大小
-                pointHoverRadius: 8 // 增大悬停时点的大小
+                pointRadius: 5,
+                pointHoverRadius: 8
             }]
         };
         
@@ -747,23 +881,23 @@ function initTest() {
         // 配置选项
         const options = {
             responsive: true,
-            maintainAspectRatio: true, 
+            maintainAspectRatio: true,
             scales: {
                 r: {
                     angleLines: {
                         display: true
                     },
-                    suggestedMin: 0, // 刻度最小值
-                    suggestedMax: maxvalue + 10, // 刻度最大值
+                    suggestedMin: 0,
+                    suggestedMax: maxvalue + 10,
                     ticks: {
-                        stepSize: 10, // 刻度间隔
+                        stepSize: 10,
                         display: true,
                         font: {
-                            size: 12 // 刻度字体大小
+                            size: 12
                         }
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.1)' // 网格线颜色
+                        color: 'rgba(0, 0, 0, 0.1)'
                     }
                 }
             },
@@ -773,7 +907,7 @@ function initTest() {
                     position: 'top',
                     labels: {
                         font: {
-                            size: 14 // 图例字体大小
+                            size: 14
                         }
                     }
                 },
@@ -789,7 +923,7 @@ function initTest() {
                     color: 'rgb(75, 0, 130)',
                     font: {
                         weight: 'bold',
-                        size: 12 // 数据标签字体大小
+                        size: 12
                     },
                     formatter: function(value) {
                         return value + '%';
@@ -802,31 +936,25 @@ function initTest() {
             maintainAspectRatio: false,
             elements: {
                 line: {
-                    tension: 0 // 线条平滑度
+                    tension: 0
                 }
             }
         };
         
-        // 创建雷达图
-        new Chart(ctx, {
+        // 创建新的图表实例并保存到全局变量
+        resultChart = new Chart(ctx, {
             type: 'radar',
             data: data,
             options: options,
             plugins: [ChartDataLabels],
-            responsiveAnimationDuration: 300 // 响应式动画时长
+            responsiveAnimationDuration: 300
         });
     }
-
 }
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化二维码
-    generateQRCode();
-    
-    // 初始化测评系统
-    initTest();
-    
+   
     // 添加样式
     const style = document.createElement('style');
     style.textContent = `
