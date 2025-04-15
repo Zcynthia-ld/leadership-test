@@ -363,11 +363,11 @@ function initTest() {
         // 只在当前问题中查找选中选项
         const selectedOption = currentQuestion.querySelector('.option.selected');
         
-        // 去掉网页提示
-        // if (!selectedOption) {
-        //     alert('请选择一个选项');
-        //     return;
-        // }
+        
+        if (!selectedOption) {
+            alert('请选择一个选项');
+            return;
+        }
         
         const questionId = questions[currentQuestionIndex].id;
         const optionType = selectedOption.getAttribute('data-type');
@@ -824,8 +824,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化二维码
     generateQRCode();
     
-    // 初始化测评系统
-    initTest();
     
     // 添加样式
     const style = document.createElement('style');
