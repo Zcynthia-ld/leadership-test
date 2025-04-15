@@ -420,6 +420,7 @@ function initTest() {
         
         // 如果没有选择选项，不显示提示，直接返回
         if (!selectedOption) {
+            alert('请选择一个选项！');
             return;
         }
         
@@ -550,64 +551,7 @@ function initTest() {
             alert('保存测评结果失败，请重试');
         }
     }
-    // // 保存测评结果
-    // async function saveAssessmentResults(scores, percentages) {
-    //     try {
-    //         if (!supabase || !currentParticipantId) {
-    //             throw new Error('Supabase客户端未初始化或参与者ID不存在');
-    //         }
-            
-    //         // 首先更新当前记录
-    //         const { data: updateData, error: updateError } = await supabase
-    //             .from('test_results')
-    //             .update({
-    //                 scores: scores,
-    //                 percentages: percentages
-    //             })
-    //             .eq('id', currentParticipantId)
-    //             .select();
-                
-    //         if (updateError) throw updateError;
-    //         console.log('测评结果保存成功:', updateData);
 
-    //         // 查找同名记录
-    //         const { data: sameNameRecords, error: findError } = await supabase
-    //             .from('test_results')
-    //             .select('*')
-    //             .eq('name', updateData[0].name);
-
-    //         if (findError) throw findError;
-
-    //         // 打印所有同名记录
-    //         console.log('同名记录:', sameNameRecords);
-
-    //         // 如果找到多个同名记录
-    //         if (sameNameRecords && sameNameRecords.length > 1) {
-    //             console.log('发现重复记录:');
-    //             sameNameRecords.forEach(record => {
-    //                 console.log(`ID: ${record.id}, 姓名: ${record.name}, 分数: ${record.scores}, 百分比: ${record.percentages}`);
-    //             });
-
-    //             // 删除除了当前记录之外的所有同名记录
-    //             const recordsToDelete = sameNameRecords
-    //                 .filter(record => record.id !== currentParticipantId)
-    //                 .map(record => record.id);
-
-    //             if (recordsToDelete.length > 0) {
-    //                 const { error: deleteError } = await supabase
-    //                     .from('test_results')
-    //                     .delete()
-    //                     .in('id', recordsToDelete);
-
-    //                 if (deleteError) throw deleteError;
-    //                 console.log('删除重复记录成功:', recordsToDelete);
-    //             }
-    //         }
-    //     } catch (error) {
-    //         console.error('保存测评结果失败:', error);
-    //         alert('保存测评结果失败，请重试');
-    //     }
-    // }
 
     // 计算各元素得分
     function calculateScores() {
